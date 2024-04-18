@@ -1,4 +1,4 @@
-package com.eip.data.model;
+package com.eip.data.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,26 +8,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MqttPublishModel {
+@Entity
+public class CanMqttMessage {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @NotNull
-    @Size(min = 1,max = 255)
+    private int messageId;
+
     private String topic;
 
-    @NotNull
-    @Size(min = 1,max = 255)
     private String message;
 
-    @NotNull
     private Boolean retained;
 
-    @NotNull
     private Integer qos;
-
 }

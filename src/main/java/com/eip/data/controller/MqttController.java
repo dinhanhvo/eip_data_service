@@ -1,15 +1,16 @@
 package com.eip.data.controller;
 
 import com.eip.data.config.Mqtt;
+import com.eip.data.exceptions.ExceptionMessages;
 import com.eip.data.exceptions.MqttException;
 import com.eip.data.model.MqttPublishModel;
 import com.eip.data.model.MqttSubscribeModel;
-import com.eip.data.exceptions.ExceptionMessages;
-import com.voda.eip.MessageListener;
+import com.eip.data.service.ListenerService;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +20,13 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/api/mqtt")
 public class MqttController {
+
+    @Autowired
+    ListenerService listenerService;
 
     @PostMapping("publish")
     public void publishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel,
@@ -68,11 +73,11 @@ public class MqttController {
             throws InterruptedException, org.eclipse.paho.client.mqttv3.MqttException {
         List<MqttSubscribeModel> messages = new ArrayList<>();
 
-        IMqttMessageListener listener = new MessageListener();
         IMqttClient mqttClient = Mqtt.getInstance();
-        IMqttToken token = mqttClient.subscribeWithResponse(topic, listener);
+        log.info("--------------- clientID: {}", mqttClient.getClientId());
+        IMqttToken token = mqttClient.subscribeWithResponse(topic, listenerService);
 
-        token.waitForCompletion();
+//        token.waitForCompletion();
 
         return messages;
     }

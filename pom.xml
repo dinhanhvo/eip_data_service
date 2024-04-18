@@ -5,17 +5,18 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.3.RELEASE</version>
+        <version>3.1.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.gulteking</groupId>
-    <artifactId>mqtt-backend-server</artifactId>
+    <groupId>com.eip</groupId>
+    <artifactId>com.eip.voda</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>mqtt-backend-server</name>
-    <description>Demo MQTT project for Spring Boot</description>
+    <name>dataservice</name>
+    <description>Listen and save database</description>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
+
     </properties>
 
     <dependencies>
@@ -28,6 +29,38 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Test with TestContainers -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+<!--            <version>3.2.2</version>-->
         </dependency>
 
         <dependency>
@@ -47,7 +80,17 @@
             <version>RELEASE</version>
             <scope>provided</scope>
         </dependency>
-
+        <!-- PostgreSQL database -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>
     </dependencies>
 
     <build>

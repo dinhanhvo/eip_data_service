@@ -12,9 +12,12 @@ public class Mqtt {
     private static IMqttClient instance;
 
     public static IMqttClient getInstance() {
+        return getInstance(MQTT_SERVER_ADDRES, MQTT_PUBLISHER_ID);
+    }
+    public static IMqttClient getInstance(String clientID, String brokerURL) {
         try {
             if (instance == null) {
-                instance = new MqttClient(MQTT_SERVER_ADDRES, MQTT_PUBLISHER_ID);
+                instance = new MqttClient(clientID, brokerURL);
             }
 
             MqttConnectOptions options = new MqttConnectOptions();
