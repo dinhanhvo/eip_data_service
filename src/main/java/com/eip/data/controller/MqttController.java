@@ -67,17 +67,16 @@ public class MqttController {
         return messages;
     }
 
-    @GetMapping("eip/subscribe")
-    public List<MqttSubscribeModel> subscribeEIP(@RequestParam(value = "topic") String topic,
-                                                     @RequestParam(value = "wait_millis") Integer waitMillis)
-            throws InterruptedException, org.eclipse.paho.client.mqttv3.MqttException {
+    @GetMapping("eip/sub")
+    public List<MqttSubscribeModel> subscribeEIP(@RequestParam(value = "topic") String topic)
+            throws org.eclipse.paho.client.mqttv3.MqttException {
         List<MqttSubscribeModel> messages = new ArrayList<>();
 
         IMqttClient mqttClient = Mqtt.getInstance();
-        log.info("--------------- clientID: {}", mqttClient.getClientId());
+        log.info("--------------- clientID: {}, subcribed on topic {}", mqttClient.getClientId(), topic);
         IMqttToken token = mqttClient.subscribeWithResponse(topic, listenerService);
 
-//        token.waitForCompletion();
+        token.waitForCompletion();
 
         return messages;
     }
