@@ -4,10 +4,9 @@ import com.eip.data.config.Mqtt;
 import com.eip.data.entity.CanMqttMessage;
 import com.eip.data.repositories.IMqttPublishModelRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.mqttv5.client.IMqttAsyncClient;
+import org.eclipse.paho.mqttv5.client.IMqttMessageListener;
+import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -20,14 +19,33 @@ public class ListenerService implements IMqttMessageListener {
     IMqttPublishModelRepository mqttPublishModelRepository;
 
     @Bean
-    public  void loadCloudClient() throws MqttException {
-        IMqttClient mqttClient = Mqtt.getInstance();
-        log.info("--------------- clientID: {}", mqttClient.getClientId());
+    public  void loadCloudClient() {
+//        IMqttAsyncClient mqttClient = Mqtt.getInstanceIntenal();
+//        log.info("--------------- clientID: {}", mqttClient.getClientId());
+
+        IMqttAsyncClient mqttClientCloud = Mqtt.getInstance();
+        log.info("--------------- mqttClientCloud: {}", mqttClientCloud.getClientId());
+
 
     }
 
+//    @Override
+//    public void messageArrived(String topic, MqttMessage mqttMessage) throws MqttException {
+//
+//        log.info("================== listen on: {}", topic);
+////        CanMqttMessage canMqttMessage = new CanMqttMessage();
+////        canMqttMessage.setMessage(new String(mqttMessage.getPayload()));
+////        canMqttMessage.setQos(mqttMessage.getQos());
+////        canMqttMessage.setTopic(topic);
+////        mqttPublishModelRepository.save(canMqttMessage);
+//        log.info("================== received: {}", mqttMessage);
+//        Mqtt.getInstance().publish(topic, mqttMessage);
+//        log.info("================== published: {}", mqttMessage);
+//
+//    }
+
     @Override
-    public void messageArrived(String topic, MqttMessage mqttMessage) {
+    public void messageArrived(String topic, MqttMessage mqttMessage)  {
 
         log.info("================== listen on: {}", topic);
         CanMqttMessage canMqttMessage = new CanMqttMessage();
@@ -35,7 +53,21 @@ public class ListenerService implements IMqttMessageListener {
         canMqttMessage.setQos(mqttMessage.getQos());
         canMqttMessage.setTopic(topic);
         mqttPublishModelRepository.save(canMqttMessage);
-        log.info("================== saved {} to db", canMqttMessage.getMessage());
 
+        log.info("================== saved: {}", mqttMessage);
+
+//        try {
+//            log.info("================== received: {}", mqttMessage);
+//            Mqtt.getInstance().publish(topic, mqttMessage);
+//            log.info("================== published: {}", mqttMessage);
+//        }
+//        catch( MqttException me) {
+//            log.info("reason "+me.getReasonCode());
+//            log.info("msg "+me.getMessage());
+//            log.info("loc "+me.getLocalizedMessage());
+//            log.info("cause "+me.getCause());
+//            log.info("excep "+me);
+//            log.error(me.getMessage());
+//        }
     }
 }
