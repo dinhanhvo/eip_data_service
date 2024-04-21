@@ -17,13 +17,13 @@ import java.util.Arrays;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/api/mqtt")
+@RequestMapping(value = "/api/mqtt/")
 public class MqttController {
 
     @Autowired
     ListenerService listenerService;
 
-    @PostMapping("cloud/publish")
+    @PostMapping("cloud/pub")
     public void cloudPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException {
 
         MqttMessage mqttMessage = new MqttMessage(messagePublishModel.getMessage().getBytes());

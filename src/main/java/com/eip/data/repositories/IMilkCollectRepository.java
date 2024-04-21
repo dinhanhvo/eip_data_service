@@ -1,6 +1,5 @@
 package com.eip.data.repositories;
 
-import com.eip.data.entity.CanMqttMessage;
 import com.eip.data.entity.MilkCollect;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -8,7 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IMqttPublishModelRepository extends JpaRepository<CanMqttMessage, Long> {
+public interface IMilkCollectRepository extends JpaRepository<MilkCollect, Long> {
 
-//    List<MilkCollect> findMqttStatus(String mqttStatus);
+    List<MilkCollect> findByMqttStatus(String mqttStatus);
+
+
+
 }
