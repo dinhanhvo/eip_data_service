@@ -1,5 +1,6 @@
 package com.eip.data.service;
 
+import com.eip.data.Constant;
 import com.eip.data.config.Mqtt;
 import com.eip.data.entity.CanMqttMessage;
 import com.eip.data.entity.MilkCollect;
@@ -74,6 +75,7 @@ public class ListenerService implements IMqttMessageListener {
             MilkCollect milkCollect = Converter.getObjectMapper().readValue(new String(mqttMessage.getPayload()), MilkCollect.class);
 
             if (milkCollect != null) {
+                milkCollect.setMqttStatus(Constant.COMPLETED);
                 milkCollectRepository.save(milkCollect);
                 String json = Converter.getObjectMapper().writeValueAsString(milkCollect);
                 log.info("================== json: {} ", json);
