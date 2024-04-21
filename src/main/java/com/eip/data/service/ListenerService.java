@@ -3,9 +3,9 @@ package com.eip.data.service;
 import com.eip.data.config.Mqtt;
 import com.eip.data.entity.CanMqttMessage;
 import com.eip.data.entity.MilkCollect;
+import com.eip.data.repositories.IMilkCollectRepository;
 import com.eip.data.repositories.IMqttPublishModelRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.voda.eip.Converter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.mqttv5.client.IMqttAsyncClient;
@@ -23,12 +23,18 @@ public class ListenerService implements IMqttMessageListener {
     @Autowired
     IMqttPublishModelRepository mqttPublishModelRepository;
 
+//    @Autowired
+//    MilkCollectService milkCollectService;
+
+    @Autowired
+    IMilkCollectRepository milkCollectRepository;
+
     @Bean
     public  void loadCloudClient() {
 //        IMqttAsyncClient mqttClient = Mqtt.getInstanceIntenal();
 //        log.info("--------------- clientID: {}", mqttClient.getClientId());
 
-        IMqttAsyncClient mqttClientCloud = Mqtt.getInstance();
+        IMqttAsyncClient mqttClientCloud = Mqtt.getCloudInstance();
         log.info("--------------- mqttClientCloud: {}", mqttClientCloud.getClientId());
 
 
@@ -53,11 +59,11 @@ public class ListenerService implements IMqttMessageListener {
     public void messageArrived(String topic, MqttMessage mqttMessage)  {
 
         log.info("================== listen on: {}", topic);
-        CanMqttMessage canMqttMessage = new CanMqttMessage();
-        canMqttMessage.setMessage(new String(mqttMessage.getPayload()));
-        canMqttMessage.setQos(mqttMessage.getQos());
-        canMqttMessage.setTopic(topic);
-        mqttPublishModelRepository.save(canMqttMessage);
+//        CanMqttMessage canMqttMessage = new CanMqttMessage();
+//        canMqttMessage.setMessage(new String(mqttMessage.getPayload()));
+//        canMqttMessage.setQos(mqttMessage.getQos());
+//        canMqttMessage.setTopic(topic);
+//        mqttPublishModelRepository.save(canMqttMessage);
 
         log.info("================== saved: {}", mqttMessage);
 
@@ -67,12 +73,12 @@ public class ListenerService implements IMqttMessageListener {
 //            MilkCollect milkCollect = Converter.messageToDTO(new String(mqttMessage.getPayload()));
             MilkCollect milkCollect = Converter.getObjectMapper().readValue(new String(mqttMessage.getPayload()), MilkCollect.class);
 
-
             if (milkCollect != null) {
+                milkCollectRepository.save(milkCollect);
                 String json = Converter.getObjectMapper().writeValueAsString(milkCollect);
                 log.info("================== json: {} ", json);
                 String resTopic = "response/"+milkCollect.getId() + "/" + topic;
-                Mqtt.getInstance().publish(resTopic, mqttMessage);
+                Mqtt.getCloudInstance().publish(resTopic, mqttMessage);
 
                 log.info("================== published: {} on topic: {}", mqttMessage, resTopic);
             }
