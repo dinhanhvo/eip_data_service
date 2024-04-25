@@ -60,3 +60,14 @@ If you have already setup container,
  
 Referent:
 https://www.programcreek.com/java-api-examples/?code=WeBankFinTech%2FWeEvent%2FWeEvent-master%2Fweevent-broker%2Fsrc%2Ftest%2Fjava%2Fcom%2Fwebank%2Fweevent%2Fbroker%2Fst%2FMQTTOverWebSocketTest.java
+
+scp -P 22 .\target\dataservice-1.0.0.jar voda@128.199.10.135:/home/voda
+voda/ladieubong
+
+# change postgresql pass:
+1. sudo -u postgres psql
+2. \password
+3. enter/retype
+
+# create database
+sudo -u postgres psql -c 'create database eip;'

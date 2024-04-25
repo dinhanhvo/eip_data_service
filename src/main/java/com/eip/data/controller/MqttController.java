@@ -65,7 +65,8 @@ public class MqttController {
 
         MqttProperties props = new MqttProperties();
         props.setSubscriptionIdentifiers(Arrays.asList(new Integer[] { 0 }));
-        mqttClient.subscribe(new MqttSubscription(topic, 2), null, null, listenerService, props);
+//        mqttClient.subscribe(new MqttSubscription(topic, 2), null, null, listenerService, props);
+        mqttClient.subscribe(topic, 2);
 
         return true;
     }

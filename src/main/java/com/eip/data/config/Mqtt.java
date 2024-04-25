@@ -42,13 +42,12 @@ public class Mqtt {
             if (instanceInternal == null) {
                 instanceInternal = new MqttAsyncClient(MQTT_LOCAL_SERVER_ADDRES, MQTT_SUB_ID, persistence);
 
-                MqttConnectionOptions connOpts = new MqttConnectionOptions();
-                connOpts.setCleanStart(false);
+                MqttConnectionOptions connOpts = createOptions();
 
                 log.info("Connecting to broker: " + MQTT_LOCAL_SERVER_ADDRES);
                 IMqttToken token = instanceInternal.connect(connOpts);
                 token.waitForCompletion();
-                log.info("Connected");
+                log.info("---- Connected--- ");
 
 //                log.info("Publishing message: "+content);
 //                MqttMessage message = new MqttMessage(content.getBytes());
@@ -69,10 +68,17 @@ public class Mqtt {
             log.info("excep "+me);
             log.error(me.getMessage());
         }
-
+        instanceInternal.setCallback(new EipMqttCallback());
         return instanceInternal;
     }
 
+    public static MqttConnectionOptions createOptions() {
+        MqttConnectionOptions connOpts = new MqttConnectionOptions();
+        connOpts.setCleanStart(false);
+        connOpts.setAutomaticReconnect(true);
+        connOpts.setConnectionTimeout(30);
+        return  connOpts;
+    }
     public static IMqttAsyncClient getCloudInstance() {
 
 
@@ -82,8 +88,7 @@ public class Mqtt {
             if (cloudInstance == null) {
                 cloudInstance = new MqttAsyncClient(MQTT_CLOUD_SERVER_ADDRES, MQTT_SUB_ID, persistence);
 
-                MqttConnectionOptions connOpts = new MqttConnectionOptions();
-                connOpts.setCleanStart(false);
+                MqttConnectionOptions connOpts = createOptions();
 
                 log.info("Connecting to broker: " + MQTT_CLOUD_SERVER_ADDRES);
                 IMqttToken token = cloudInstance.connect(connOpts);
@@ -102,16 +107,17 @@ public class Mqtt {
             log.info("excep :"+e);
         }
 
+        cloudInstance.setCallback(new EipMqttCallback());
         return cloudInstance;
     }
 
 
 
     public static void restart() {
-        instanceInternal = null;
+//        instanceInternal = null;
         cloudInstance = null;
         getCloudInstance();
-        getInstanceInternal();
+//        getInstanceInternal();
     }
     public static void controlPublish(IMqttAsyncClient mqttClient, String topic, MqttMessage mqttMessage) {
         try {
