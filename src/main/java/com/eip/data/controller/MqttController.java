@@ -48,7 +48,7 @@ public class MqttController {
         IMqttAsyncClient mqttClient = Mqtt.getInstanceInternal();
         log.info("--------------- clientID: {}, subscribed on topic {}", mqttClient.getClientId(), topic);
 
-        Mqtt.controlSubscribe(mqttClient, topic, bridgerService);
+        Mqtt.controlSubscribe(mqttClient, topic);
 
         return true;
     }

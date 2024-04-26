@@ -40,7 +40,7 @@ public class Mqtt {
 
                 MqttConnectionOptions connOpts = new MqttConnectionOptions();
                 connOpts.setCleanStart(false);
-
+                instanceInternal.setCallback(new EipMqttCallback());
                 log.info("Connecting to broker: " + MQTT_LOCAL_SERVER_ADDRES);
                 IMqttToken token = instanceInternal.connect(connOpts);
                 token.waitForCompletion();
@@ -66,16 +66,13 @@ public class Mqtt {
         try {
             if (cloudInstance == null) {
                 cloudInstance = new MqttAsyncClient(MQTT_CLOUD_SERVER_ADDRES, MQTT_PUB_ID, persistence);
-
-                MqttConnectionOptions connOpts = new MqttConnectionOptions();
-                connOpts.setCleanStart(false);
-
-
+                cloudInstance.setCallback(new EipMqttCallback());
                 log.info("Connecting to broker: " + MQTT_CLOUD_SERVER_ADDRES);
 //                log.info(System.getProperty("broker"));
-                System.getenv().forEach((e, v) -> {
-                    log.info(e + "=" + v);
-                });
+//                System.getenv().forEach((e, v) -> {
+//                    log.info(e + "=" + v);
+//                });
+                MqttConnectionOptions connOpts =createOptions();
                 IMqttToken token = cloudInstance.connect(connOpts);
                 token.waitForCompletion();
 
@@ -92,6 +89,15 @@ public class Mqtt {
         }
 
         return cloudInstance;
+    }
+
+    public  static  MqttConnectionOptions createOptions() {
+        MqttConnectionOptions connOpts = new MqttConnectionOptions();
+        connOpts.setCleanStart(false);
+        connOpts.setKeepAliveInterval(5);
+        connOpts.setAutomaticReconnect(true);
+        connOpts.setConnectionTimeout(30);
+        return  connOpts;
     }
 
     public static void restart() {
@@ -121,6 +127,14 @@ public class Mqtt {
         MqttProperties props = new MqttProperties();
         props.setSubscriptionIdentifiers(Arrays.asList(new Integer[] { 0 }));
         mqttClient.subscribe(new MqttSubscription(topic, 2), null, null, bridgerService, props);
+
+    }
+
+    public static void controlSubscribe(IMqttAsyncClient mqttClient, String topic ) throws MqttException {
+
+        MqttProperties props = new MqttProperties();
+        props.setSubscriptionIdentifiers(Arrays.asList(new Integer[] { 0 }));
+        mqttClient.subscribe(topic, 2);
 
     }
 

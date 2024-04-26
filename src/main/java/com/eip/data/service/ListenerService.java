@@ -9,17 +9,17 @@ import com.eip.data.repositories.IMqttPublishModelRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.voda.eip.Converter;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.paho.mqttv5.client.IMqttAsyncClient;
-import org.eclipse.paho.mqttv5.client.IMqttMessageListener;
+import org.eclipse.paho.mqttv5.client.*;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
+import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class ListenerService implements IMqttMessageListener {
+public class ListenerService implements IMqttMessageListener, MqttCallback {
 
     @Autowired
     IMqttPublishModelRepository mqttPublishModelRepository;
@@ -41,21 +41,6 @@ public class ListenerService implements IMqttMessageListener {
 
     }
 
-//    @Override
-//    public void messageArrived(String topic, MqttMessage mqttMessage) throws MqttException {
-//
-//        log.info("================== listen on: {}", topic);
-////        CanMqttMessage canMqttMessage = new CanMqttMessage();
-////        canMqttMessage.setMessage(new String(mqttMessage.getPayload()));
-////        canMqttMessage.setQos(mqttMessage.getQos());
-////        canMqttMessage.setTopic(topic);
-////        mqttPublishModelRepository.save(canMqttMessage);
-//        log.info("================== received: {}", mqttMessage);
-//        Mqtt.getInstance().publish(topic, mqttMessage);
-//        log.info("================== published: {}", mqttMessage);
-//
-//    }
-
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage)  {
 
@@ -72,14 +57,11 @@ public class ListenerService implements IMqttMessageListener {
         try {
             log.info("================== received: {}", mqttMessage);
             MilkCollect milkCollect = null;
-//            MilkCollect milkCollect = Converter.messageToDTO(new String(mqttMessage.getPayload()));
             if (topic.equalsIgnoreCase("test")) {
-                log.info("================== milkCollect TESSSSSSTTTTTT");
                 milkCollect = Converter.messageToDTO(new String(mqttMessage.getPayload()));
             } else  {
                 milkCollect = Converter.getObjectMapper().readValue(new String(mqttMessage.getPayload()), MilkCollect.class);
             }
-//            MilkCollect milkCollect = Converter.getObjectMapper().readValue(new String(mqttMessage.getPayload()), MilkCollect.class);
 
             if (milkCollect != null) {
                 milkCollect.setMqttStatus(Constant.COMPLETED);
@@ -112,8 +94,30 @@ public class ListenerService implements IMqttMessageListener {
                 Mqtt.restart();
             }
         }
-//        catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
+    }
+
+    @Override
+    public void disconnected(MqttDisconnectResponse mqttDisconnectResponse) {
+        log.info("---------------------- disconnected ---------------");
+    }
+
+    @Override
+    public void mqttErrorOccurred(MqttException e) {
+        log.info("---------------------- mqttErrorOccurred ---------------");
+    }
+
+    @Override
+    public void deliveryComplete(IMqttToken iMqttToken) {
+        log.info("---------------------- deliveryComplete ---------------");
+    }
+
+    @Override
+    public void connectComplete(boolean b, String s) {
+        log.info("---------------------- connectComplete ---------------");
+    }
+
+    @Override
+    public void authPacketArrived(int i, MqttProperties mqttProperties) {
+        log.info("---------------------- authPacketArrived ---------------");
     }
 }
