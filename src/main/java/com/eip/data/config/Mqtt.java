@@ -12,29 +12,25 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Arrays;
 
 @Slf4j
 public class Mqtt {
 
-    private static final String MQTT_PUB_ID = "cloud--client-pub";
+//    @Value("${JAVA_HOME}")
+//    private static String javaHome;
+    private static final String MQTT_PUB_ID = "data-client-pub";
     private static final String MQTT_CLOUD_SERVER_ADDRES= "tcp://broker.emqx.io:1883";
 
-    private static final String MQTT_SUB_ID = "cloud-client-sub";
-    private static final String MQTT_LOCAL_SERVER_ADDRES= "tcp://192.168.1.14:1883";
+    private static final String MQTT_SUB_ID = "data-client-sub";
+    private static final String MQTT_LOCAL_SERVER_ADDRES= "tcp://localhost:1883";
     private static IMqttAsyncClient instanceInternal;
 
     private static IMqttAsyncClient cloudInstance;
 
     public static IMqttAsyncClient getInstanceInternal() {
-
-
-//            String topic        = "MQTT Examples";
-//            String content      = "Message from MqttPublishSample";
-//            int qos             = 2;
-//            String broker       = "tcp://iot.eclipse.org:1883";
-//            String clientId     = "JavaSample";
 
         MemoryPersistence persistence = new MemoryPersistence();
 
@@ -42,23 +38,14 @@ public class Mqtt {
             if (instanceInternal == null) {
                 instanceInternal = new MqttAsyncClient(MQTT_LOCAL_SERVER_ADDRES, MQTT_SUB_ID, persistence);
 
-                MqttConnectionOptions connOpts = createOptions();
+                MqttConnectionOptions connOpts = new MqttConnectionOptions();
+                connOpts.setCleanStart(false);
 
                 log.info("Connecting to broker: " + MQTT_LOCAL_SERVER_ADDRES);
                 IMqttToken token = instanceInternal.connect(connOpts);
                 token.waitForCompletion();
-                log.info("---- Connected--- ");
+                log.info("Connected");
 
-//                log.info("Publishing message: "+content);
-//                MqttMessage message = new MqttMessage(content.getBytes());
-//                message.setQos(qos);
-//                token = instanceIntenal.publish(topic, message);
-//                token.waitForCompletion();
-
-//                log.info("Disconnected");
-//                log.info("Close client.");
-//                sampleClient.close();
-//                System.exit(0);
             }
         } catch(MqttException me) {
             log.info("reason "+me.getReasonCode());
@@ -68,32 +55,29 @@ public class Mqtt {
             log.info("excep "+me);
             log.error(me.getMessage());
         }
-        instanceInternal.setCallback(new EipMqttCallback());
+
         return instanceInternal;
     }
 
-    public static MqttConnectionOptions createOptions() {
-        MqttConnectionOptions connOpts = new MqttConnectionOptions();
-        connOpts.setCleanStart(false);
-        connOpts.setAutomaticReconnect(true);
-        connOpts.setConnectionTimeout(30);
-        return  connOpts;
-    }
     public static IMqttAsyncClient getCloudInstance() {
-
 
         MemoryPersistence persistence = new MemoryPersistence();
 
         try {
             if (cloudInstance == null) {
-                cloudInstance = new MqttAsyncClient(MQTT_CLOUD_SERVER_ADDRES, MQTT_SUB_ID, persistence);
+                cloudInstance = new MqttAsyncClient(MQTT_CLOUD_SERVER_ADDRES, MQTT_PUB_ID, persistence);
 
-                MqttConnectionOptions connOpts = createOptions();
+                MqttConnectionOptions connOpts = new MqttConnectionOptions();
+                connOpts.setCleanStart(false);
+
 
                 log.info("Connecting to broker: " + MQTT_CLOUD_SERVER_ADDRES);
+//                log.info(System.getProperty("broker"));
+                System.getenv().forEach((e, v) -> {
+                    log.info(e + "=" + v);
+                });
                 IMqttToken token = cloudInstance.connect(connOpts);
                 token.waitForCompletion();
-                log.info("Connected");
 
             }
 
@@ -107,17 +91,14 @@ public class Mqtt {
             log.info("excep :"+e);
         }
 
-        cloudInstance.setCallback(new EipMqttCallback());
         return cloudInstance;
     }
 
-
-
     public static void restart() {
-//        instanceInternal = null;
+        instanceInternal = null;
         cloudInstance = null;
         getCloudInstance();
-//        getInstanceInternal();
+        getInstanceInternal();
     }
     public static void controlPublish(IMqttAsyncClient mqttClient, String topic, MqttMessage mqttMessage) {
         try {
@@ -146,6 +127,7 @@ public class Mqtt {
     public static void controlUnSubscribe(IMqttAsyncClient mqttClient, String topic) throws MqttException {
         mqttClient.unsubscribe(topic);
     }
+
 
     private Mqtt() {
 

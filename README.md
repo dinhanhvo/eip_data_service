@@ -71,3 +71,6 @@ voda/ladieubong
 
 # create database
 sudo -u postgres psql -c 'create database eip;'
+
+# install Mosquitto local
+https://cedalo.com/blog/how-to-install-mosquitto-mqtt-broker-on-windows/

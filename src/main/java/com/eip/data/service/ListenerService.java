@@ -71,8 +71,15 @@ public class ListenerService implements IMqttMessageListener {
         // response to local the message received
         try {
             log.info("================== received: {}", mqttMessage);
+            MilkCollect milkCollect = null;
 //            MilkCollect milkCollect = Converter.messageToDTO(new String(mqttMessage.getPayload()));
-            MilkCollect milkCollect = Converter.getObjectMapper().readValue(new String(mqttMessage.getPayload()), MilkCollect.class);
+            if (topic.equalsIgnoreCase("test")) {
+                log.info("================== milkCollect TESSSSSSTTTTTT");
+                milkCollect = Converter.messageToDTO(new String(mqttMessage.getPayload()));
+            } else  {
+                milkCollect = Converter.getObjectMapper().readValue(new String(mqttMessage.getPayload()), MilkCollect.class);
+            }
+//            MilkCollect milkCollect = Converter.getObjectMapper().readValue(new String(mqttMessage.getPayload()), MilkCollect.class);
 
             if (milkCollect != null) {
                 milkCollect.setMqttStatus(Constant.COMPLETED);
@@ -83,6 +90,8 @@ public class ListenerService implements IMqttMessageListener {
                 Mqtt.getCloudInstance().publish(resTopic, mqttMessage);
 
                 log.info("================== published: {} on topic: {}", mqttMessage, resTopic);
+            } else {
+                log.info("================== milkCollect null");
             }
         }
         catch( MqttException me) {

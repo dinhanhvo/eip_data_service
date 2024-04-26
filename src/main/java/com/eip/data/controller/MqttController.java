@@ -7,55 +7,51 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.mqttv5.client.IMqttAsyncClient;
 import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
-import org.eclipse.paho.mqttv5.common.MqttSubscription;
-import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/api/mqtt/")
+@RequestMapping(value = "/api/mqtt")
 public class MqttController {
 
     @Autowired
-    ListenerService listenerService;
+    ListenerService bridgerService;
 
     @PostMapping("cloud/pub")
-    public void cloudPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException {
+    public ResponseEntity<?> cloudPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException {
 
         MqttMessage mqttMessage = new MqttMessage(messagePublishModel.getMessage().getBytes());
         mqttMessage.setQos(messagePublishModel.getQos());
         mqttMessage.setRetained(messagePublishModel.getRetained());
 
         Mqtt.getCloudInstance().publish(messagePublishModel.getTopic(), mqttMessage);
-
+        return ResponseEntity.ok().body(messagePublishModel.getMessage());
     }
 
-//    @PostMapping("internal/publish")
-//    public void internalPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException {
-//
-//        MqttMessage mqttMessage = new MqttMessage(messagePublishModel.getMessage().getBytes());
-//        mqttMessage.setQos(messagePublishModel.getQos());
-//        mqttMessage.setRetained(messagePublishModel.getRetained());
-//        Mqtt.getInstanceIntenal().publish(messagePublishModel.getTopic(), mqttMessage);
-//
-//    }
+    @PostMapping("internal/pub")
+    public ResponseEntity<?> internalPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException {
 
-//    @GetMapping("internal/sub")
-//    public boolean subscribeEIP(@RequestParam(value = "topic") String topic) throws MqttException {
-//
-//        IMqttAsyncClient mqttClient = Mqtt.getInstanceIntenal();
-//        log.info("--------------- clientID: {}, subscribed on topic {}", mqttClient.getClientId(), topic);
-//
-//        MqttProperties props = new MqttProperties();
-//        props.setSubscriptionIdentifiers(Arrays.asList(new Integer[] { 0 }));
-//        mqttClient.subscribe(new MqttSubscription(topic, 2), null, null, listenerService, props);
-//
-//        return true;
-//    }
+        MqttMessage mqttMessage = new MqttMessage(messagePublishModel.getMessage().getBytes());
+        mqttMessage.setQos(messagePublishModel.getQos());
+        mqttMessage.setRetained(messagePublishModel.getRetained());
+        Mqtt.getInstanceInternal().publish(messagePublishModel.getTopic(), mqttMessage);
+        return ResponseEntity.ok().body(messagePublishModel.getMessage());
+    }
+
+    @GetMapping("internal/sub")
+    public boolean subscribeEIP(@RequestParam(value = "topic") String topic) throws MqttException {
+
+        IMqttAsyncClient mqttClient = Mqtt.getInstanceInternal();
+        log.info("--------------- clientID: {}, subscribed on topic {}", mqttClient.getClientId(), topic);
+
+        Mqtt.controlSubscribe(mqttClient, topic, bridgerService);
+
+        return true;
+    }
 
     @GetMapping("cloud/sub")
     public boolean cloudSubscribeEIP(@RequestParam(value = "topic") String topic) throws MqttException {
@@ -63,11 +59,7 @@ public class MqttController {
         IMqttAsyncClient mqttClient = Mqtt.getCloudInstance();
         log.info("--------------- clientID: {}, subscribed on topic {}", mqttClient.getClientId(), topic);
 
-        MqttProperties props = new MqttProperties();
-        props.setSubscriptionIdentifiers(Arrays.asList(new Integer[] { 0 }));
-//        mqttClient.subscribe(new MqttSubscription(topic, 2), null, null, listenerService, props);
-        mqttClient.subscribe(topic, 2);
-
+        Mqtt.controlSubscribe(mqttClient, topic, bridgerService);
         return true;
     }
 
