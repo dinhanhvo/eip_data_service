@@ -10,6 +10,7 @@
     </parent>
     <groupId>com.eip</groupId>
     <artifactId>dataservice</artifactId>
+    <packaging>war</packaging>
     <version>1.0.0</version>
     <name>dataservice</name>
     <description>Listen and save database</description>

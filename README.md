@@ -68,6 +68,7 @@ voda/ladieubong
 1. sudo -u postgres psql
 2. \password
 3. enter/retype
+4. \c eip
 
 # create database
 sudo -u postgres psql -c 'create database eip;'

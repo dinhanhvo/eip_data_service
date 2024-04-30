@@ -12,15 +12,20 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.eclipse.paho.mqttv5.common.MqttMessage;
 import org.eclipse.paho.mqttv5.common.MqttSubscription;
 import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
+import org.hibernate.annotations.Comment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
 @Slf4j
+@Component
 public class Mqtt {
 
 //    @Value("${JAVA_HOME}")
 //    private static String javaHome;
+//    static EipMqttCallback eipMqttCallback = new EipMqttCallback();
     private static final String MQTT_PUB_ID = "eip_data_service";
     private static final String MQTT_CLOUD_SERVER_ADDRES= "ssl://w795de7b.ala.us-east-1.emqxsl.com:8883";
 
@@ -40,7 +45,7 @@ public class Mqtt {
 
                 MqttConnectionOptions connOpts = new MqttConnectionOptions();
                 connOpts.setCleanStart(false);
-                instanceInternal.setCallback(new EipMqttCallback());
+//                instanceInternal.setCallback(eipMqttCallback);
                 log.info("Connecting to broker: " + MQTT_LOCAL_SERVER_ADDRES);
                 IMqttToken token = instanceInternal.connect(connOpts);
                 token.waitForCompletion();
@@ -66,7 +71,7 @@ public class Mqtt {
         try {
             if (cloudInstance == null) {
                 cloudInstance = new MqttAsyncClient(MQTT_CLOUD_SERVER_ADDRES, MQTT_PUB_ID, persistence);
-                cloudInstance.setCallback(new EipMqttCallback());
+//                cloudInstance.setCallback(eipMqttCallback);
                 log.info("Connecting to broker: " + MQTT_CLOUD_SERVER_ADDRES);
 //                log.info(System.getProperty("broker"));
 //                System.getenv().forEach((e, v) -> {

@@ -31,8 +31,11 @@ import java.time.ZonedDateTime;
 @Table(name = "milk_collect")
 public class MilkCollect {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+//    @Column(name = "msg_id")
+//    private  String msgId;
 
     @Column(name = "Serial_Weigher")
     private  String serialWeigher;
@@ -58,7 +61,7 @@ public class MilkCollect {
     @Column(name = "Mqtt_Status")
     private String mqttStatus;
 
-    @Column(name = "created")
+    @Column(name = "createdAt")
     private ZonedDateTime createdAt;
 
 }

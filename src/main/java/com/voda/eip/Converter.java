@@ -85,6 +85,7 @@ public class Converter {
             milkCollect.setMqttStatus(ss[8]);
             log.info("------------9----- milkCollect {}", milkCollect);
             milkCollect.setCreatedAt(ZonedDateTime.parse(ss[9], formatter));
+//            milkCollect.setCreatedAt(ss[9]);
             log.info("-------------10---- milkCollect {}", milkCollect);
 
         } catch (Exception e) {

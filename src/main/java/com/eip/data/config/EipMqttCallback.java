@@ -33,6 +33,7 @@ public class EipMqttCallback implements MqttCallback {
         log.info("---------------------- mqttErrorOccurred ---------------");
     }
 
+    @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
 //        System.out.println("topic: " + topic);
 //        System.out.println("qos: " + message.getQos());

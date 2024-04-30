@@ -1,8 +1,11 @@
 package com.eip.data.controller;
 
 import com.eip.data.config.Mqtt;
+import com.eip.data.entity.MilkCollect;
 import com.eip.data.model.MqttPublishModel;
 import com.eip.data.service.ListenerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.voda.eip.Converter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.mqttv5.client.IMqttAsyncClient;
 import org.eclipse.paho.mqttv5.common.MqttException;
@@ -22,9 +25,9 @@ public class MqttController {
     ListenerService bridgerService;
 
     @PostMapping("cloud/pub")
-    public ResponseEntity<?> cloudPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException {
-
-        MqttMessage mqttMessage = new MqttMessage(messagePublishModel.getMessage().getBytes());
+    public ResponseEntity<?> cloudPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException, JsonProcessingException {
+        String sj = Converter.getObjectMapper().writeValueAsString(messagePublishModel.getMessage());
+        MqttMessage mqttMessage = new MqttMessage(sj.getBytes());
         mqttMessage.setQos(messagePublishModel.getQos());
         mqttMessage.setRetained(messagePublishModel.getRetained());
 
@@ -32,10 +35,11 @@ public class MqttController {
         return ResponseEntity.ok().body(messagePublishModel.getMessage());
     }
 
-    @PostMapping("internal/pub")
-    public ResponseEntity<?> internalPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException {
 
-        MqttMessage mqttMessage = new MqttMessage(messagePublishModel.getMessage().getBytes());
+    @PostMapping("internal/pub")
+    public ResponseEntity<?> internalPublishMessage(@RequestBody @Valid MqttPublishModel messagePublishModel) throws MqttException, JsonProcessingException {
+        String sj = Converter.getObjectMapper().writeValueAsString(messagePublishModel.getMessage());
+        MqttMessage mqttMessage = new MqttMessage(sj.getBytes());
         mqttMessage.setQos(messagePublishModel.getQos());
         mqttMessage.setRetained(messagePublishModel.getRetained());
         Mqtt.getInstanceInternal().publish(messagePublishModel.getTopic(), mqttMessage);
@@ -48,7 +52,7 @@ public class MqttController {
         IMqttAsyncClient mqttClient = Mqtt.getInstanceInternal();
         log.info("--------------- clientID: {}, subscribed on topic {}", mqttClient.getClientId(), topic);
 
-        Mqtt.controlSubscribe(mqttClient, topic);
+        Mqtt.controlSubscribe(mqttClient, topic, bridgerService);
 
         return true;
     }

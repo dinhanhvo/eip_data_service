@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class ListenerService implements IMqttMessageListener, MqttCallback {
+public class ListenerService implements IMqttMessageListener {
 
     @Autowired
     IMqttPublishModelRepository mqttPublishModelRepository;
@@ -96,28 +96,28 @@ public class ListenerService implements IMqttMessageListener, MqttCallback {
         }
     }
 
-    @Override
-    public void disconnected(MqttDisconnectResponse mqttDisconnectResponse) {
-        log.info("---------------------- disconnected ---------------");
-    }
-
-    @Override
-    public void mqttErrorOccurred(MqttException e) {
-        log.info("---------------------- mqttErrorOccurred ---------------");
-    }
-
-    @Override
-    public void deliveryComplete(IMqttToken iMqttToken) {
-        log.info("---------------------- deliveryComplete ---------------");
-    }
-
-    @Override
-    public void connectComplete(boolean b, String s) {
-        log.info("---------------------- connectComplete ---------------");
-    }
-
-    @Override
-    public void authPacketArrived(int i, MqttProperties mqttProperties) {
-        log.info("---------------------- authPacketArrived ---------------");
-    }
+//    @Override
+//    public void disconnected(MqttDisconnectResponse mqttDisconnectResponse) {
+//        log.info("---------------------- disconnected ---------------");
+//    }
+//
+//    @Override
+//    public void mqttErrorOccurred(MqttException e) {
+//        log.info("---------------------- mqttErrorOccurred ---------------");
+//    }
+//
+//    @Override
+//    public void deliveryComplete(IMqttToken iMqttToken) {
+//        log.info("---------------------- deliveryComplete ---------------");
+//    }
+//
+//    @Override
+//    public void connectComplete(boolean b, String s) {
+//        log.info("---------------------- connectComplete ---------------");
+//    }
+//
+//    @Override
+//    public void authPacketArrived(int i, MqttProperties mqttProperties) {
+//        log.info("---------------------- authPacketArrived ---------------");
+//    }
 }
