@@ -21,10 +21,10 @@ public class Mqtt {
 
 //    @Value("${JAVA_HOME}")
 //    private static String javaHome;
-    private static final String MQTT_PUB_ID = "data-client-pub";
-    private static final String MQTT_CLOUD_SERVER_ADDRES= "tcp://broker.emqx.io:1883";
+    private static final String MQTT_PUB_ID = "eip_data_service";
+    private static final String MQTT_CLOUD_SERVER_ADDRES= "ssl://w795de7b.ala.us-east-1.emqxsl.com:8883";
 
-    private static final String MQTT_SUB_ID = "data-client-sub";
+    private static final String MQTT_SUB_ID = "eip_data_service";
     private static final String MQTT_LOCAL_SERVER_ADDRES= "tcp://localhost:1883";
     private static IMqttAsyncClient instanceInternal;
 
@@ -97,6 +97,8 @@ public class Mqtt {
         connOpts.setKeepAliveInterval(5);
         connOpts.setAutomaticReconnect(true);
         connOpts.setConnectionTimeout(30);
+        connOpts.setUserName("voda");
+        connOpts.setPassword("voda2610".getBytes());
         return  connOpts;
     }
 
